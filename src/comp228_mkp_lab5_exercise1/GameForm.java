@@ -23,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.beans.value.*;
 import java.sql.*;
+import javax.swing.*;
 
 public class GameForm extends Application{
 	// Override the start method of the Application class
@@ -61,15 +62,15 @@ public class GameForm extends Application{
 			GridPane leftContainer = new GridPane();
 			// Set properties
 			leftContainer.setPadding(new Insets(5, 10, 5, 10));
-			leftContainer.setVgap(8);
-			leftContainer.setHgap(8);
+			leftContainer.setVgap(10);
+			leftContainer.setHgap(10);
 			// Create labels
-			Label lbPlayer = new Label("Player Info");
+			Label lbPlayer = new Label("Player Registration");
 			lbPlayer.setFont(Font.font("Times New Roman", FontWeight.SEMI_BOLD, 20));
-			lbPlayer.setPadding(new Insets(10, 20, 5, 20));
+			lbPlayer.setPadding(new Insets(10, 90, 5, 90));
 			lbPlayer.setStyle("-fx-border-style: hidden hidden solid hidden; -fx-border-width: 3;");
 			GridPane.setHalignment(lbPlayer, HPos.CENTER);
-			Label lbPlayerID = new Label("ID:");
+			Label lbPlayerID = new Label("Player ID:");
 			Label lbFirstName = new Label("First name:");
 			Label lbLastName = new Label("Last name:");
 			Label lbAddress = new Label("Address:");
@@ -85,6 +86,14 @@ public class GameForm extends Application{
 			TextField tfProvince = new TextField();
 			TextField tfPostalCode = new TextField();
 			TextField tfPhoneNumber = new TextField();
+			// Add Buttons
+			HBox playerControls = new HBox();
+			playerControls.setSpacing(30);
+			playerControls.setAlignment(Pos.CENTER);
+			playerControls.setPadding(new Insets(8,0,5,0));
+			Button btnDisplayPlayers = new Button("Display all");
+			Button btnCreatePlayer = new Button("Add player");
+			playerControls.getChildren().addAll(btnDisplayPlayers, btnCreatePlayer);
 			// Populate contents
 			leftContainer.add(lbPlayer, 0, 0, 2, 1);
 			leftContainer.add(lbPlayerID, 0, 1);
@@ -101,9 +110,65 @@ public class GameForm extends Application{
 			leftContainer.add(tfProvince, 1, 6);
 			leftContainer.add(lbPhoneNumber, 0, 7);
 			leftContainer.add(tfPhoneNumber, 1, 7);
+			leftContainer.add(playerControls, 0, 8, 2, 1);
+			// RIGHT CONTAINER
+			// Instantiate a GridPane
+			GridPane rightContainer = new GridPane();
+			// Set properties
+			rightContainer.setPadding(new Insets(5, 10, 5, 10));
+			rightContainer.setVgap(10);
+			rightContainer.setHgap(10);
+			// Create labels
+			Label lbGame = new Label("Game Details");
+			lbGame.setFont(Font.font("Times New Roman", FontWeight.SEMI_BOLD, 20));
+			lbGame.setPadding(new Insets(10, 85, 5, 85));
+			lbGame.setStyle("-fx-border-style: hidden hidden solid hidden; -fx-border-width: 3;");
+			GridPane.setHalignment(lbGame, HPos.CENTER);
+			Label lbGameID = new Label("Game ID:");
+			Label lbGameTitle = new Label("Game Title:");
+			Label lbProfile = new Label("Profile Information");
+			lbProfile.setFont(Font.font("Times New Roman", FontWeight.SEMI_BOLD, 20));
+			lbProfile.setPadding(new Insets(30, 65, 5, 65));
+			lbProfile.setStyle("-fx-border-style: hidden hidden solid hidden; -fx-border-width: 3;");
+			GridPane.setHalignment(lbProfile, HPos.CENTER);
+			Label lbProfileID = new Label("Select a profile:");
+			Spinner<Integer> idSpinner = new Spinner<Integer>(1,10,1);
+			idSpinner.setEditable(true);
+			idSpinner.setPrefWidth(50);
+			// Create TextFields
+			TextField tfGameID = new TextField();
+			TextField tfGameTitle = new TextField();
+			tfGameTitle.setPrefWidth(200);
+			// Add buttons
+			HBox gameControls = new HBox();
+			gameControls.setAlignment(Pos.CENTER);
+			gameControls.setPadding(new Insets(8,0,5,0));
+			Button btnAddGame = new Button("Add game");
+			gameControls.getChildren().addAll(btnAddGame);
+			HBox profileControls = new HBox();
+			profileControls.setSpacing(25);
+			profileControls.setAlignment(Pos.BASELINE_LEFT);
+			profileControls.setPadding(new Insets(8,0,5,0));
+			Button btnUpdatePlayer = new Button("Update player");
+			Button btnViewPlayer = new Button("View played games");
+			profileControls.getChildren().addAll(btnUpdatePlayer, btnViewPlayer);
+			// Populate the contents
+			rightContainer.add(lbGame, 0, 0, 2, 1);
+			rightContainer.add(lbGameID, 0, 1);
+			rightContainer.add(tfGameID, 1, 1);
+			rightContainer.add(lbGameTitle, 0, 2);
+			rightContainer.add(tfGameTitle, 1, 2);
+			rightContainer.add(gameControls, 0, 3, 2, 1);
+			rightContainer.add(lbProfile, 0, 4, 2, 1);
+			rightContainer.add(lbProfileID, 0, 5);
+			rightContainer.add(idSpinner, 1, 5);
+			rightContainer.add(profileControls, 0, 6, 2, 1);
 		// Populate the containers
+			BorderPane.setMargin(leftContainer, new Insets(0,0,0,100));
+			BorderPane.setMargin(rightContainer, new Insets(0,100,0,0));
 			rootBP.setTop(topContainer);
 			rootBP.setLeft(leftContainer);
+			rootBP.setRight(rightContainer);
 		// Create a scene
 			Scene scene = new Scene(rootBP, 1000, 600);
 		// Set scene
