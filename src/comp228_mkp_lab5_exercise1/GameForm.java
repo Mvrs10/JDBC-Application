@@ -29,8 +29,10 @@ public class GameForm extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws ClassNotFoundException, SQLException {
+		// Connection to database
 		Connection conn = null;
 		try {
+			// Passing URL
 			String url = "jdbc:mysql://localhost:3306/gamestore";
 			String username = "root";
 			String password = "NewPassword123";
@@ -38,13 +40,75 @@ public class GameForm extends Application{
 			if(conn != null) {
 				System.out.println("Database Successfully Connected");
 			}
-			Statement st = conn.createStatement();
-			String query = "select * from game";
-			ResultSet rs = st.executeQuery(query);
-			for(int i=0; i<4; i++) {
-				rs.next();
-				System.out.println(rs.getString(1)+"------"+rs.getString(2)+"------");
-			}
+			// Create a statement
+			Statement st = conn.createStatement();	
+		// Application GUI
+		// Design
+			primaryStage.setTitle("COMP-228 Lab5 JDBC - Minh Khoi Phan");
+			// Create the root container - Border Pane
+			BorderPane rootBP = createRootBorderPane();
+			// TOP CONTAINER
+			HBox topContainer = new HBox(); //Instantiate HBox
+			// Set properties
+			topContainer.setPadding(new Insets(20, 0, 20, 0));
+			// Add contents
+			Label header = new Label("Game Store App");
+			header.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
+			topContainer.getChildren().add(header);	
+			topContainer.setAlignment(Pos.BASELINE_CENTER); // Center alignment
+			// LEFT CONTAINER
+			// Instantiate a GridPane
+			GridPane leftContainer = new GridPane();
+			// Set properties
+			leftContainer.setPadding(new Insets(5, 10, 5, 10));
+			leftContainer.setVgap(8);
+			leftContainer.setHgap(8);
+			// Create labels
+			Label lbPlayer = new Label("Player Info");
+			lbPlayer.setFont(Font.font("Times New Roman", FontWeight.SEMI_BOLD, 20));
+			lbPlayer.setPadding(new Insets(10, 20, 5, 20));
+			lbPlayer.setStyle("-fx-border-style: hidden hidden solid hidden; -fx-border-width: 3;");
+			GridPane.setHalignment(lbPlayer, HPos.CENTER);
+			Label lbPlayerID = new Label("ID:");
+			Label lbFirstName = new Label("First name:");
+			Label lbLastName = new Label("Last name:");
+			Label lbAddress = new Label("Address:");
+			Label lbProvince = new Label("Province:");
+			Label lbPostalCode = new Label("Postal Code:");
+			Label lbPhoneNumber = new Label("Phone Number:");
+			// Create TextFields
+			TextField tfPlayerID = new TextField();
+			TextField tfFirstName = new TextField();
+			tfFirstName.setPrefWidth(250);
+			TextField tfLastName = new TextField();
+			TextField tfAddress = new TextField();
+			TextField tfProvince = new TextField();
+			TextField tfPostalCode = new TextField();
+			TextField tfPhoneNumber = new TextField();
+			// Populate contents
+			leftContainer.add(lbPlayer, 0, 0, 2, 1);
+			leftContainer.add(lbPlayerID, 0, 1);
+			leftContainer.add(tfPlayerID, 1, 1);
+			leftContainer.add(lbFirstName, 0, 2);
+			leftContainer.add(tfFirstName, 1, 2);
+			leftContainer.add(lbLastName, 0, 3);
+			leftContainer.add(tfLastName, 1, 3);
+			leftContainer.add(lbAddress, 0, 4);
+			leftContainer.add(tfAddress, 1, 4);
+			leftContainer.add(lbPostalCode, 0, 5);
+			leftContainer.add(tfPostalCode, 1, 5);
+			leftContainer.add(lbProvince, 0, 6);
+			leftContainer.add(tfProvince, 1, 6);
+			leftContainer.add(lbPhoneNumber, 0, 7);
+			leftContainer.add(tfPhoneNumber, 1, 7);
+		// Populate the containers
+			rootBP.setTop(topContainer);
+			rootBP.setLeft(leftContainer);
+		// Create a scene
+			Scene scene = new Scene(rootBP, 1000, 600);
+		// Set scene
+			primaryStage.setScene(scene);
+			primaryStage.show();
 		}
 		catch(SQLException e) {
 			System.out.println("Exception: "+e.getMessage());
