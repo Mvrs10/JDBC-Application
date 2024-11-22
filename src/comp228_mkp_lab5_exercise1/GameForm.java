@@ -81,6 +81,46 @@ public class GameForm extends Application{
 			Button btnDisplayPlayers = new Button("Display all");
 			Button btnCreatePlayer = new Button("Add player");
 			playerControls.getChildren().addAll(btnDisplayPlayers, btnCreatePlayer);
+			// CREATE PLAYER FUNCTIONALITY
+			EventHandler<ActionEvent> addPlayer = new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e) {
+					Connection conn = null;
+					PreparedStatement pst = null;
+					Integer playerID = Integer.valueOf(tfPlayerID.getText());
+					String firstname = tfFirstName.getText();
+					String lastname = tfLastName.getText();
+					String address = tfAddress.getText();
+					String province = tfProvince.getText();
+					String postalcode = tfPostalCode.getText();
+					String phonenumber = tfPhoneNumber.getText();
+					try {
+						conn = getDBConnection();
+						String query = "INSERT INTO player (player_id,first_name,last_name,address,postal_code,province,phone_number) VALUES (?,?,?,?,?,?,?)";
+						pst = conn.prepareStatement(query);
+						pst.setInt(1, playerID);
+						pst.setString(2, firstname);
+						pst.setString(3, lastname);
+						pst.setString(4, address);
+						pst.setString(5, postalcode);
+						pst.setString(6, province);
+						pst.setString(7, phonenumber);
+						int res = pst.executeUpdate();
+						if (res > 0) {
+							JOptionPane.showMessageDialog(null, res+" player inserted", "Player", 1);
+						}						
+					} catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+					finally {									
+						try {
+							closeDBConnection(conn,pst);
+						} catch (SQLException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			};
+			btnCreatePlayer.setOnAction(addPlayer);
 			// Populate contents
 			leftContainer.add(lbPlayer, 0, 0, 2, 1);
 			leftContainer.add(lbPlayerID, 0, 1);
@@ -163,7 +203,6 @@ public class GameForm extends Application{
 						try {
 							closeDBConnection(conn,pst);
 						} catch (SQLException ex) {
-							// TODO Auto-generated catch block
 							ex.printStackTrace();
 						}
 					}
@@ -225,6 +264,7 @@ public class GameForm extends Application{
 		try {
 			// Passing URL
 			conn = DriverManager.getConnection(url,username,password);
+			System.out.println("Successfully connected to database!!!");
 			return conn;
 		}
 		catch(SQLException e){
@@ -237,6 +277,7 @@ public class GameForm extends Application{
 	private void closeDBConnection(Connection c, PreparedStatement ps) throws SQLException{
 		ps.close();
 		c.close();
+		System.out.println("Connection close!");
 	}
 
 }
