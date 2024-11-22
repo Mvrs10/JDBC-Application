@@ -73,6 +73,8 @@ public class GameForm extends Application{
 			TextField tfProvince = new TextField();
 			TextField tfPostalCode = new TextField();
 			TextField tfPhoneNumber = new TextField();
+			ArrayList<TextField> tfList = new ArrayList<TextField>(
+					List.of(tfPlayerID, tfFirstName, tfLastName, tfAddress, tfPostalCode, tfProvince, tfPhoneNumber));
 			// Add Buttons
 			HBox playerControls = new HBox();
 			playerControls.setSpacing(30);
@@ -80,7 +82,15 @@ public class GameForm extends Application{
 			playerControls.setPadding(new Insets(8,0,5,0));
 			Button btnDisplayPlayers = new Button("Display all");
 			Button btnCreatePlayer = new Button("Add player");
-			playerControls.getChildren().addAll(btnDisplayPlayers, btnCreatePlayer);
+			Button btnReset = new Button("Reset");
+			playerControls.getChildren().addAll(btnDisplayPlayers, btnCreatePlayer, btnReset);
+			// RESET FUNCTIONALITY
+			EventHandler<ActionEvent> resetFields = new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e) {
+					clearFields(tfList);
+				}
+			};
+			btnReset.setOnAction(resetFields);
 			// CREATE PLAYER FUNCTIONALITY
 			EventHandler<ActionEvent> addPlayer = new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent e) {
@@ -94,7 +104,7 @@ public class GameForm extends Application{
 					String postalcode = tfPostalCode.getText();
 					String phonenumber = tfPhoneNumber.getText();
 					try {
-						conn = getDBConnection();
+						conn = getDBConnection(conn);
 						String query = "INSERT INTO player (player_id,first_name,last_name,address,postal_code,province,phone_number) VALUES (?,?,?,?,?,?,?)";
 						pst = conn.prepareStatement(query);
 						pst.setInt(1, playerID);
@@ -187,7 +197,7 @@ public class GameForm extends Application{
 					Integer gameID = Integer.valueOf(tfGameID.getText());
 					String gameTitle = tfGameTitle.getText();
 					try {
-						conn = getDBConnection();
+						conn = getDBConnection(conn);
 						String query = "INSERT INTO game (game_id,game_title) VALUES (?,?)";
 						pst = conn.prepareStatement(query);
 						pst.setInt(1, gameID);
@@ -209,6 +219,86 @@ public class GameForm extends Application{
 				}
 			};
 			btnAddGame.setOnAction(addGame);
+			//SHOW PLAYER PROFILE USING SPINNER
+			idSpinner.valueProperty().addListener(new ChangeListener<Integer>() {
+
+				@Override
+				public void changed(ObservableValue<? extends Integer> arg0, Integer arg1, Integer arg2) {
+					Connection conn = null;
+					PreparedStatement pst = null;
+					ResultSet rs = null;
+					try {
+						conn = getDBConnection(conn);
+						String query = "SELECT * FROM player WHERE player_id=?";
+						pst = conn.prepareStatement(query);
+						pst.setInt(1, idSpinner.getValue());
+						rs = pst.executeQuery();
+						rs.next();
+						tfPlayerID.setDisable(true);
+						tfPlayerID.setText(String.valueOf(idSpinner.getValue()));	
+						tfFirstName.setText(rs.getString(2));
+						tfLastName.setText(rs.getString(3));
+						tfAddress.setText(rs.getString(4));
+						tfPostalCode.setText(rs.getString(5));
+						tfProvince.setText(rs.getString(6));
+						tfPhoneNumber.setText(rs.getString(7));
+					}
+					catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+					finally {
+						try {
+							closeDBConnection(conn,pst,rs);
+						} catch (SQLException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+				
+			});
+			//UPDATE PLAYER FUNCTIONALITY
+			EventHandler<ActionEvent> updatePlayer = new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e) {
+					Connection conn = null;
+					PreparedStatement pst = null;
+					Integer playerID = idSpinner.getValue();
+					String firstname = tfFirstName.getText();
+					String lastname = tfLastName.getText();
+					String address = tfAddress.getText();
+					String province = tfProvince.getText();
+					String postalcode = tfPostalCode.getText();
+					String phonenumber = tfPhoneNumber.getText();
+					try {
+						conn = getDBConnection(conn);
+						String query = "UPDATE player SET player_id=?,first_name=?,last_name=?,address=?,postal_code=?,province=?,phone_number=? WHERE player_id=?";
+						pst = conn.prepareStatement(query);
+						pst.setInt(1, playerID);
+						pst.setInt(8, playerID);
+						pst.setString(2, firstname);
+						pst.setString(3, lastname);
+						pst.setString(4, address);
+						pst.setString(5, postalcode);
+						pst.setString(6, province);
+						pst.setString(7, phonenumber);
+						int res = pst.executeUpdate();
+						if (res > 0) {
+							JOptionPane.showMessageDialog(null, res+" records successfully updated!", "Player", 1);
+						}	
+					}
+					catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+					finally {
+						clearFields(tfList);
+						try {
+							closeDBConnection(conn,pst);
+						} catch (SQLException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			};
+			btnUpdatePlayer.setOnAction(updatePlayer);
 			// Populate the contents
 			rightContainer.add(lbGame, 0, 0, 2, 1);
 			rightContainer.add(lbGameID, 0, 1);
@@ -232,7 +322,6 @@ public class GameForm extends Application{
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		}
-
 	
 
 	
@@ -250,8 +339,7 @@ public class GameForm extends Application{
 		return bp;
 	};
 	// Database Connection function
-	private Connection getDBConnection() throws SQLException {
-		Connection conn = null;
+	private Connection getDBConnection(Connection conn) throws SQLException {
 		final String url = "jdbc:mysql://localhost:3306/gamestore";
 		final String username = "root";
 		final String password = "NewPassword123";
@@ -278,7 +366,18 @@ public class GameForm extends Application{
 		ps.close();
 		c.close();
 		System.out.println("Connection close!");
+	};
+	private void closeDBConnection(Connection c, PreparedStatement ps, ResultSet rs) throws SQLException{
+		rs.close();
+		ps.close();
+		c.close();
+		System.out.println("Connection close!");
 	}
-
+	private void clearFields(ArrayList<TextField> arr) {
+		arr.get(0).setDisable(false);
+		for (int i=0; i<arr.size();i++) {
+			arr.get(i).clear();
+		}		
+	}
 }
 
