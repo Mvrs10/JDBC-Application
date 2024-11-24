@@ -1,43 +1,42 @@
 <h1>JavaFX Application Form</h1>
 
- ### 🏫 [Demo Video](https://drive.google.com/file/d/1UZG3TJQPM2aaHS-iYVs1riF0fCXPBQg9/view?usp=sharing)
+ ### 🏫 [Demo Video](https://drive.google.com/file/d/1T7ozVgVpO1iAtjH2Y5Fl57rtIuAVyRnh/view?usp=sharing)
 
 <h2>Description</h2>
-Project is a JavaFX Form Application:
+Project is a JavaFX+JDBC Application using MySQL:
 <ul>
- <li>Design: Implementation of Pane, nodes, UI Controls</li>
- <li>Functionalities: Users can fill in the form, choose the programs with relevant courses, choose the courses and display all information</li>
- <li>Future Improvement: Adding images, submission functionality, database connection</li>
+ <li>Design: Implementation of Pane, UI Controls, JDBC</li>
+ <li>Functionalities: Users can add players, games, view list of all players, update info and view owned games from a database</li>
+ <li>Future Improvement: More appealing UI/UX, class modularization, code refactorization </li>
 </ul>
 <br />
 
 
 <h2>Languages and Utilities Used</h2>
 
-- <b>Java, javafx-sdk-21</b> 
+- <b>Java, javafx-sdk-21, JDBC</b> 
 
 <h2>IDE Used </h2>
 
-- <b>Eclipse</b>
+- <b>Eclipse, MySQL</b>
 
 <h2>Program walk-through:</h2>
 
 <p align="center">
-Fill in the textfields: <br/>
-<img src="https://i.imgur.com/nOqNSvV.png" height="80%" width="80%" alt="JavaFX"/>
+View all players: <br/>
+<img src="https://i.imgur.com/aeKjigX.png" height="80%" width="80%" alt="JDBC"/>
 <br />
 <br />
-Choose a program:  <br/>
-<img src="https://i.imgur.com/rFsplcr.png" height="80%" width="80%" alt="JavaFX"/>
-<img src="https://i.imgur.com/fn0plCJ.png" height="80%" width="80%" alt="JavaFX"/>
+Update a player:  <br/>
+<img src="https://i.imgur.com/A3vcvLA.png" height="80%" width="80%" alt="JDBC"/>
 <br />
 <br />
-Select a course: <br/>
-<img src="https://i.imgur.com/0nsNgM7.png" height="80%" width="80%" alt="JavaFX"/>
+Add a game: <br/>
+<img src="https://i.imgur.com/Kf22sNR.png" height="80%" width="80%" alt="JavaFX"/>
 <br />
 <br />
-Display:  <br/>
-<img src="https://i.imgur.com/XVTEsfy.png" height="80%" width="80%" alt="JavaFX"/>
+View owned games:  <br/>
+<img src="https://i.imgur.com/w9z1jzB.png" height="80%" width="80%" alt="JavaFX"/>
 <br />
 <br />
 </p>
