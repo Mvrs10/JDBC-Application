@@ -83,88 +83,7 @@ public class GameForm extends Application{
 			Button btnCreatePlayer = new Button("Add player");
 			Button btnReset = new Button("Reset");
 			playerControls.getChildren().addAll(btnDisplayPlayers, btnCreatePlayer, btnReset);
-			// RESET FUNCTIONALITY
-			EventHandler<ActionEvent> resetFields = new EventHandler<ActionEvent>() {
-				public void handle(ActionEvent e) {
-					clearFields(tfList);
-				}
-			};
-			btnReset.setOnAction(resetFields);
-			// CREATE PLAYER FUNCTIONALITY
-			EventHandler<ActionEvent> addPlayer = new EventHandler<ActionEvent>() {
-				public void handle(ActionEvent e) {
-					Connection conn = null;
-					PreparedStatement pst = null;
-					Integer playerID = Integer.valueOf(tfPlayerID.getText());
-					String firstname = tfFirstName.getText();
-					String lastname = tfLastName.getText();
-					String address = tfAddress.getText();
-					String province = tfProvince.getText();
-					String postalcode = tfPostalCode.getText();
-					String phonenumber = tfPhoneNumber.getText();
-					try {
-						conn = getDBConnection(conn);
-						String query = "INSERT INTO player (player_id,first_name,last_name,address,postal_code,province,phone_number) VALUES (?,?,?,?,?,?,?)";
-						pst = conn.prepareStatement(query);
-						pst.setInt(1, playerID);
-						pst.setString(2, firstname);
-						pst.setString(3, lastname);
-						pst.setString(4, address);
-						pst.setString(5, postalcode);
-						pst.setString(6, province);
-						pst.setString(7, phonenumber);
-						int res = pst.executeUpdate();
-						if (res > 0) {
-							JOptionPane.showMessageDialog(null, res+" player inserted", "Player", 1);
-						}						
-					} catch (SQLException ex) {
-						ex.printStackTrace();
-					}
-					finally {									
-						try {
-							closeDBConnection(conn,pst);
-						} catch (SQLException ex) {
-							ex.printStackTrace();
-						}
-					}
-				}
-			};
-			btnCreatePlayer.setOnAction(addPlayer);
-			// DISPLAY ALL PLAYERS - JTABLE
-			EventHandler<ActionEvent> displayAllPlayers = new EventHandler<ActionEvent>() {
-				public void handle(ActionEvent e) {
-					Connection conn = null;
-					Statement st = null;
-					ResultSet rs = null;
-					try
-					{
-						conn = getDBConnection(conn);
-						String query = "SELECT * FROM player";
-						st = conn.createStatement();
-						rs = st.executeQuery(query);
-						List<String> colNames = List.of(lbPlayerID.getText().substring(0,lbPlayerID.getText().length()-1), lbFirstName.getText().substring(0,lbFirstName.getText().length()-1), lbLastName.getText().substring(0,lbLastName.getText().length()-1), lbAddress.getText().substring(0,lbAddress.getText().length()-1), lbPostalCode.getText().substring(0,lbPostalCode.getText().length()-1), lbProvince.getText().substring(0,lbProvince.getText().length()-1), lbPhoneNumber.getText().substring(0,lbPhoneNumber.getText().length()-1));
-						List<String[]> data = new ArrayList<String[]>();
-						while(rs.next())
-						{
-							data.add(new String[] {String.valueOf(rs.getInt(1)), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)});
-						}
-						makeTable("Player Table",data,colNames,800,400);
-					}
-					catch(SQLException ex) {
-						ex.printStackTrace();
-					}
-					finally
-					{
-						try {
-							closeDBConnection(conn,st,rs);
-						}
-						catch (SQLException ex) {
-							ex.printStackTrace();
-						}
-					}
-				}
-			};
-			btnDisplayPlayers.setOnAction(displayAllPlayers);
+
 			// Populate contents
 			leftContainer.add(lbPlayer, 0, 0, 2, 1);
 			leftContainer.add(lbPlayerID, 0, 1);
@@ -203,7 +122,8 @@ public class GameForm extends Application{
 			lbProfile.setStyle("-fx-border-style: hidden hidden solid hidden; -fx-border-width: 3;");
 			GridPane.setHalignment(lbProfile, HPos.CENTER);
 			Label lbProfileID = new Label("Select a profile:");
-			Spinner<Integer> idSpinner = new Spinner<Integer>(1,10,1);
+			int playerCount = countPlayer(); // Return the number of records
+			Spinner<Integer> idSpinner = new Spinner<Integer>(1,playerCount,1);
 			idSpinner.setEditable(true);
 			idSpinner.setPrefWidth(50);
 			// Create TextFields
@@ -223,6 +143,89 @@ public class GameForm extends Application{
 			Button btnUpdatePlayer = new Button("Update player");
 			Button btnViewPlayer = new Button("View played games");
 			profileControls.getChildren().addAll(btnUpdatePlayer, btnViewPlayer);
+			// RESET FUNCTIONALITY
+			EventHandler<ActionEvent> resetFields = new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e) {
+					clearFields(tfList);
+				}
+			};
+			btnReset.setOnAction(resetFields);
+			// CREATE PLAYER FUNCTIONALITY
+			EventHandler<ActionEvent> addPlayer = new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e) {
+					Connection conn = null;
+					PreparedStatement pst = null;
+					Integer playerID = Integer.valueOf(tfPlayerID.getText());
+					String firstname = tfFirstName.getText();
+					String lastname = tfLastName.getText();
+					String address = tfAddress.getText();
+					String province = tfProvince.getText();
+					String postalcode = tfPostalCode.getText();
+					String phonenumber = tfPhoneNumber.getText();
+					try {
+						conn = getDBConnection(conn);
+						String query = "INSERT INTO player (player_id,first_name,last_name,address,postal_code,province,phone_number) VALUES (?,?,?,?,?,?,?)";
+						pst = conn.prepareStatement(query);
+						pst.setInt(1, playerID);
+						pst.setString(2, firstname);
+						pst.setString(3, lastname);
+						pst.setString(4, address);
+						pst.setString(5, postalcode);
+						pst.setString(6, province);
+						pst.setString(7, phonenumber);
+						int res = pst.executeUpdate();
+						if (res > 0) {
+							idSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,playerCount+1,1));
+							JOptionPane.showMessageDialog(null, res+" player inserted", "Player", 1);
+						}						
+					} catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+					finally {									
+						try {
+							closeDBConnection(conn,pst);
+						} catch (SQLException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			};
+			btnCreatePlayer.setOnAction(addPlayer);
+			// DISPLAY ALL PLAYERS - JTABLE
+			EventHandler<ActionEvent> displayAllPlayers = new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e) {
+					Connection conn = null;
+					Statement st = null;
+					ResultSet rs = null;
+					try
+					{
+						conn = getDBConnection(conn);
+						String query = "SELECT * FROM player";
+						st = conn.createStatement();
+						rs = st.executeQuery(query);
+						List<String> colNames = List.of(lbPlayerID.getText().substring(0,lbPlayerID.getText().length()-1), lbFirstName.getText().substring(0,lbFirstName.getText().length()-1), lbLastName.getText().substring(0,lbLastName.getText().length()-1), lbAddress.getText().substring(0,lbAddress.getText().length()-1), lbPostalCode.getText().substring(0,lbPostalCode.getText().length()-1), lbProvince.getText().substring(0,lbProvince.getText().length()-1), lbPhoneNumber.getText().substring(0,lbPhoneNumber.getText().length()-1));
+						List<String[]> data = new ArrayList<String[]>();
+						while(rs.next())
+						{
+							data.add(new String[] {String.valueOf(rs.getInt(1)), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)});
+						}
+						makeTable("Player Table",data,colNames,800,200);
+					}
+					catch(SQLException ex) {
+						ex.printStackTrace();
+					}
+					finally
+					{
+						try {
+							closeDBConnection(conn,st,rs);
+						}
+						catch (SQLException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			};
+			btnDisplayPlayers.setOnAction(displayAllPlayers);
 			//ADD GAME FUNCTIONALITY
 			EventHandler<ActionEvent> addGame = new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent e) {
@@ -333,6 +336,46 @@ public class GameForm extends Application{
 				}
 			};
 			btnUpdatePlayer.setOnAction(updatePlayer);
+			// VIEW OWNED GAME FUNCTIONALITY
+			EventHandler<ActionEvent> displayOwnedGames = new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e) {
+					Connection conn = null;
+					PreparedStatement pst = null;
+					ResultSet rs = null;
+					try
+					{
+						conn = getDBConnection(conn);
+						String query = "SELECT ownedgame.game_id, game.game_title, ownedgame.playing_date, ownedgame.score, player.first_name, player.last_name\r\n"
+								+ "FROM gamestore.player \r\n"
+								+ "INNER JOIN gamestore.ownedgame ON gamestore.player.player_id = gamestore.ownedgame.player_id\r\n"
+								+ "INNER JOIN gamestore.game ON gamestore.ownedgame.game_id = gamestore.game.game_id\r\n"
+								+ "WHERE gamestore.player.player_id = ?;";
+						pst = conn.prepareStatement(query);
+						pst.setInt(1, idSpinner.getValue());
+						rs = pst.executeQuery();
+						List<String> colNames = List.of("Game ID", "Title", "Date", "Score");
+						List<String[]> data = new ArrayList<String[]>();
+						while(rs.next())
+						{
+							data.add(new String[] {String.valueOf(rs.getInt(1)), rs.getString(2), String.valueOf(rs.getDate(3)), String.valueOf(rs.getInt(4))});
+						}
+						makeTable(tfFirstName.getText()+tfLastName.getText()+"'s Games",data,colNames,400,100);
+					}
+					catch(SQLException ex) {
+						ex.printStackTrace();
+					}
+					finally
+					{
+						try {
+							closeDBConnection(conn,pst,rs);
+						}
+						catch (SQLException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			};
+			btnViewPlayer.setOnAction(displayOwnedGames);
 			// Populate the contents
 			rightContainer.add(lbGame, 0, 0, 2, 1);
 			rightContainer.add(lbGameID, 0, 1);
@@ -429,10 +472,35 @@ public class GameForm extends Application{
 		String[] columnName = col.toArray(new String[col.size()]);
 		//Create a J-table
 		JTable playerTable = new JTable(data,columnName);
-		//playerTable.setBounds(400, 400, 400, 100);
 		JScrollPane scrollPane = new JScrollPane(playerTable);		
 		playerFrame.add(scrollPane);
 		playerFrame.setVisible(true);
+	}
+	// Get Player Counts
+	private int countPlayer() {
+		Connection conn = null;
+		Statement st = null;
+		ResultSet rs = null;
+		int playerCount = 10;
+		try {
+			conn = getDBConnection(conn);
+			String query = "SELECT COUNT(*) FROM player;";
+			st = conn.createStatement();
+			rs = st.executeQuery(query);
+			rs.next();
+			playerCount = rs.getInt(1);
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		finally {
+			try {
+				closeDBConnection(conn,st,rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return playerCount;
 	}
 }
 
