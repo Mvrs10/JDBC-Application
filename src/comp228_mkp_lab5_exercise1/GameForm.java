@@ -73,8 +73,7 @@ public class GameForm extends Application{
 			TextField tfProvince = new TextField();
 			TextField tfPostalCode = new TextField();
 			TextField tfPhoneNumber = new TextField();
-			ArrayList<TextField> tfList = new ArrayList<TextField>(
-					List.of(tfPlayerID, tfFirstName, tfLastName, tfAddress, tfPostalCode, tfProvince, tfPhoneNumber));
+			List<TextField> tfList = List.of(tfPlayerID, tfFirstName, tfLastName, tfAddress, tfPostalCode, tfProvince, tfPhoneNumber);
 			// Add Buttons
 			HBox playerControls = new HBox();
 			playerControls.setSpacing(30);
@@ -131,6 +130,41 @@ public class GameForm extends Application{
 				}
 			};
 			btnCreatePlayer.setOnAction(addPlayer);
+			// DISPLAY ALL PLAYERS - JTABLE
+			EventHandler<ActionEvent> displayAllPlayers = new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e) {
+					Connection conn = null;
+					Statement st = null;
+					ResultSet rs = null;
+					try
+					{
+						conn = getDBConnection(conn);
+						String query = "SELECT * FROM player";
+						st = conn.createStatement();
+						rs = st.executeQuery(query);
+						List<String> colNames = List.of(lbPlayerID.getText().substring(0,lbPlayerID.getText().length()-1), lbFirstName.getText().substring(0,lbFirstName.getText().length()-1), lbLastName.getText().substring(0,lbLastName.getText().length()-1), lbAddress.getText().substring(0,lbAddress.getText().length()-1), lbPostalCode.getText().substring(0,lbPostalCode.getText().length()-1), lbProvince.getText().substring(0,lbProvince.getText().length()-1), lbPhoneNumber.getText().substring(0,lbPhoneNumber.getText().length()-1));
+						List<String[]> data = new ArrayList<String[]>();
+						while(rs.next())
+						{
+							data.add(new String[] {String.valueOf(rs.getInt(1)), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)});
+						}
+						makeTable("Player Table",data,colNames,800,400);
+					}
+					catch(SQLException ex) {
+						ex.printStackTrace();
+					}
+					finally
+					{
+						try {
+							closeDBConnection(conn,st,rs);
+						}
+						catch (SQLException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			};
+			btnDisplayPlayers.setOnAction(displayAllPlayers);
 			// Populate contents
 			leftContainer.add(lbPlayer, 0, 0, 2, 1);
 			leftContainer.add(lbPlayerID, 0, 1);
@@ -373,11 +407,32 @@ public class GameForm extends Application{
 		c.close();
 		System.out.println("Connection close!");
 	}
-	private void clearFields(ArrayList<TextField> arr) {
+	private void closeDBConnection(Connection c, Statement st, ResultSet rs) throws SQLException{
+		rs.close();
+		st.close();
+		c.close();
+		System.out.println("Connection close!");
+	}
+	// Clear fields
+	private void clearFields(List<TextField> arr) {
 		arr.get(0).setDisable(false);
 		for (int i=0; i<arr.size();i++) {
 			arr.get(i).clear();
 		}		
+	}
+	// Make JTable
+	private void makeTable(String title, List<String[]> dt, List<String> col, int width, int height) {
+		//Create a frame
+		JFrame playerFrame = new JFrame(title);
+		playerFrame.setSize(width,height);
+		String[][] data = dt.toArray(new String[dt.size()][]);
+		String[] columnName = col.toArray(new String[col.size()]);
+		//Create a J-table
+		JTable playerTable = new JTable(data,columnName);
+		//playerTable.setBounds(400, 400, 400, 100);
+		JScrollPane scrollPane = new JScrollPane(playerTable);		
+		playerFrame.add(scrollPane);
+		playerFrame.setVisible(true);
 	}
 }
 
