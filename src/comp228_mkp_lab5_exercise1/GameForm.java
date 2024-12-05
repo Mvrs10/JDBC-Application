@@ -241,6 +241,8 @@ public class GameForm extends Application{
 						pst.setString(2, gameTitle);
 						int res = pst.executeUpdate();
 						if (res > 0) {
+							tfGameID.clear();
+							tfGameTitle.clear();
 							JOptionPane.showMessageDialog(null, res+" game inserted", "Game", 1);
 						}						
 					} catch (SQLException ex) {

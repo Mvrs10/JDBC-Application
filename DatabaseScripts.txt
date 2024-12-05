@@ -1,0 +1,68 @@
+-- Game Table
+CREATE TABLE gamestore.game (
+game_id INT NOT NULL,
+game_title VARCHAR(45) NOT NULL,
+UNIQUE (game_id),
+PRIMARY KEY (game_id)
+);
+-- Player Table
+CREATE TABLE gamestore.player (
+player_id INT NOT NULL,
+first_name VARCHAR(45) NOT NULL,
+last_name VARCHAR(45) NOT NULL,
+address VARCHAR(45),
+postal_code CHAR(7),
+province CHAR(2),
+phone_number VARCHAR(10),
+UNIQUE (player_id),
+PRIMARY KEY (player_id)
+);
+-- Owned game Table aka games owned by player
+CREATE TABLE gamestore.ownedgame (
+ownedgame_id INT NOT NULL,
+game_id INT,
+player_id INT,
+playing_date DATE,
+score INT,
+UNIQUE (ownedgame_id),
+PRIMARY KEY (ownedgame_id),
+FOREIGN KEY (game_id) REFERENCES gamestore.game (game_id),
+FOREIGN KEY (player_id) REFERENCES gamestore.player (player_id)
+);
+
+-- Insert some records to Game
+INSERT INTO gamestore.game (game_id,game_title) VALUES (1, 'Monster Hunter');
+INSERT INTO gamestore.game (game_id,game_title) VALUES (2, 'L4D2');
+INSERT INTO gamestore.game (game_id,game_title) VALUES (3, 'Final Fantasy');
+INSERT INTO gamestore.game (game_id,game_title) VALUES (4, 'Super Mario');
+INSERT INTO gamestore.game (game_id,game_title) VALUES (5, 'Mass Effect');
+INSERT INTO gamestore.game (game_id,game_title) VALUES (6, 'The Witcher');
+
+-- Insert some records to Player
+INSERT INTO gamestore.player (player_id,first_name,last_name,address,postal_code,province,phone_number) VALUES (1, 'John','Wick','King St','L1K 1J1','ON','123456');
+INSERT INTO gamestore.player (player_id,first_name,last_name,address,postal_code,province,phone_number) VALUES (2, 'Ann','May','Queen Ave','P2S 2F2','AB','357921');
+INSERT INTO gamestore.player (player_id,first_name,last_name,address,postal_code,province,phone_number) VALUES (3, 'Lin','Qian','Fuji Blvd','H3I 3BB','QC','896145');
+INSERT INTO gamestore.player (player_id,first_name,last_name,address,postal_code,province,phone_number) VALUES (4, 'Suda','Malek','Thunder Rd','S4R 4I4','BC','976215');
+
+-- Insert some records to Owned Game
+INSERT INTO gamestore.ownedgame (ownedgame_id,game_id,player_id,playing_date,score) VALUES (1,1,1,'2024-11-20',100);
+INSERT INTO gamestore.ownedgame (ownedgame_id,game_id,player_id,playing_date,score) VALUES (2,6,1,'2023-10-15',100);
+INSERT INTO gamestore.ownedgame (ownedgame_id,game_id,player_id,playing_date,score) VALUES (3,3,4,'2024-09-02',60);
+INSERT INTO gamestore.ownedgame (ownedgame_id,game_id,player_id,playing_date,score) VALUES (4,2,2,'2020-07-07',83);
+INSERT INTO gamestore.ownedgame (ownedgame_id,game_id,player_id,playing_date,score) VALUES (5,2,3,'2022-02-13',100);
+
+-- DML for Testing
+SELECT * FROM gamestore.ownedgame WHERE player_id = 1;
+
+-- SELECT joined records in 3 tables
+SELECT gamestore.ownedgame.game_id, gamestore.game.game_title, gamestore.ownedgame.playing_date, gamestore.ownedgame.score
+FROM gamestore.player 
+INNER JOIN gamestore.ownedgame ON gamestore.player.player_id = gamestore.ownedgame.player_id
+INNER JOIN gamestore.game ON gamestore.ownedgame.game_id = gamestore.game.game_id
+WHERE gamestore.player.player_id = 1;
+
+-- Function to retreive number of records
+SELECT COUNT(*) FROM gamestore.player;
+-- Select ALL from a table
+SELECT * FROM gamestore.player;
+SELECT * FROM gamestore.game;
