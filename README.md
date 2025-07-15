@@ -1,4 +1,4 @@
-<h1>JavaFX Application Form</h1>
+<h1>Game Registration App</h1>
 
  ### 🏫 [Demo Video](https://drive.google.com/file/d/1T7ozVgVpO1iAtjH2Y5Fl57rtIuAVyRnh/view?usp=sharing)
 
